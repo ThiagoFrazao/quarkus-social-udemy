@@ -1,4 +1,4 @@
-package io.github.tfrazzao.user.modelos;
+package io.github.tfrazzao.rest.user.modelos;
 
 import lombok.Data;
 

@@ -1,6 +1,6 @@
-package io.github.tfrazzao.user;
+package io.github.tfrazzao.rest.user;
 
-import io.github.tfrazzao.user.modelos.CriarUsuarioRequestBody;
+import io.github.tfrazzao.rest.user.modelos.CriarUsuarioRequestBody;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
