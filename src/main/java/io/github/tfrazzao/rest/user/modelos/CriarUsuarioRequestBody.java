@@ -7,6 +7,6 @@ public class CriarUsuarioRequestBody {
 
     private String nome;
 
-    private Integer idade;
+    private Long idade;
 
 }
