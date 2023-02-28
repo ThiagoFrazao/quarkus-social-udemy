@@ -1,12 +1,16 @@
 package io.github.tfrazzao.rest.user;
 
 import io.github.tfrazzao.domain.model.Usuario;
+import io.github.tfrazzao.domain.repository.UsuarioRepository;
 import io.github.tfrazzao.rest.user.modelos.CriarUsuarioRequestBody;
 import io.github.tfrazzao.rest.user.modelos.OrdenacaoUsuario;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Sort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +18,22 @@ import java.util.List;
 @ApplicationScoped
 public class UserService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
+
+    private final UsuarioRepository repositorio;
+
+    @Inject
+    public UserService(UsuarioRepository repositorio) {
+        this.repositorio = repositorio;
+    }
 
     @Transactional
     public boolean criarUsuario(CriarUsuarioRequestBody requestBody) {
         try {
-            Usuario novoUsuario = new Usuario(requestBody.getIdade(), requestBody.getNome());
-            novoUsuario.persist();
+            this.repositorio.persist(new Usuario(requestBody.getIdade(), requestBody.getNome()));
             return true;
         } catch (Exception e) {
+            LOG.error("Falha ao tentar criar o Usuario {} {}", requestBody.getNome(), requestBody.getIdade(), e);
             return false;
         }
     }
@@ -30,12 +42,13 @@ public class UserService {
         try {
             final PanacheQuery<Usuario> usuarios;
             if(ordenacao != null) {
-                usuarios = Usuario.findAll(Sort.by(ordenacao.getNomeColuna()));
+                usuarios = this.repositorio.findAll(Sort.by(ordenacao.getNomeColuna()));
             } else {
-                usuarios = Usuario.findAll();
+                usuarios = this.repositorio.findAll();
             }
             return usuarios.list();
         } catch (Exception e) {
+            LOG.error("Falha ao recuperar os usuarios.", e);
             return new ArrayList<>();
         }
     }
@@ -43,7 +56,7 @@ public class UserService {
     @Transactional
     public boolean atualizarUsuario(Long idUsuario, CriarUsuarioRequestBody requestBody) {
         try {
-            Usuario usuario = Usuario.findById(idUsuario);
+            Usuario usuario = this.repositorio.findById(idUsuario);
             if(usuario != null) {
                 usuario.setNome(requestBody.getNome());
                 usuario.setIdade(requestBody.getIdade());
@@ -52,6 +65,7 @@ public class UserService {
                 return false;
             }
         } catch (Exception e) {
+            LOG.error("Falha ao atualizar o usuario {}", idUsuario, e);
             return false;
         }
     }
@@ -59,7 +73,7 @@ public class UserService {
     @Transactional
     public boolean removerUsuario(Long idUsuario) {
         try {
-            return Usuario.deleteById(idUsuario);
+            return this.repositorio.deleteById(idUsuario);
         } catch (Exception e) {
             return false;
         }

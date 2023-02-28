@@ -1,7 +1,6 @@
 package io.github.tfrazzao.domain.model;
 
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +16,7 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = "usuario")
-public class Usuario extends PanacheEntityBase {
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
